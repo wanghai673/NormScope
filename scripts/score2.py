@@ -4,12 +4,15 @@
 用法：python3 -I score2.py <round>"""
 import glob, json, os, random, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); RN = sys.argv[1]; RD = f"{ROOT}/work/{RN}"
-G = {g["id"]: g for g in json.load(open(f"{RD}/groups.json"))}; CONDS = ["none", "raw", "mem0", "hindsight", "everos", "graphiti", "langmem", "cognee", "oracle"]
+LOCAL = os.path.isdir(RD)                              # 自己跑出来的结果在 work/<round>；否则复核仓库里发布的 results/<round>/runs.jsonl
+if not LOCAL: RD = f"{ROOT}/results/{RN}"
+G = {g["id"]: g for g in json.load(open(f"{RD}/groups.json" if LOCAL else f"{ROOT}/data/{RN}/groups.json"))}; CONDS = ["none", "raw", "mem0", "hindsight", "everos", "graphiti", "langmem", "cognee", "oracle"]
 NAME = {"none": "无记忆", "raw": "RAG（原话检索）", "mem0": "Mem0", "hindsight": "Hindsight", "everos": "EverOS", "graphiti": "Graphiti（Zep 的开源核心）", "langmem": "LangMem", "cognee": "Cognee", "oracle": "理想送达（上限）"}
 KIND = {"N": "没给原因的一次性指令", "H": "个人习惯", "E": "个人环境", "S": "有情境原因的一次性安排"}
 rows = []
-for f in glob.glob(f"{RD}/runs/*/*/*/result.json"):
-    r = json.load(open(f)); g = G[r["group"]]; slot = r["slot"]
+RUNS = [json.load(open(f)) for f in glob.glob(f"{RD}/runs/*/*/*/result.json")] if LOCAL else [json.loads(l) for l in open(f"{RD}/runs.jsonl")]
+for r in RUNS:
+    g = G[r["group"]]; slot = r["slot"]
     for nid, order in g["order"].items():
         v = r["verdict"][nid]; rule = "new" if order == "CD" else ("old" if slot in ("T3", "T4") else "new")
         exp = ("A" if slot in ("T3", "T4") else "B") if order == "CD" else ("B" if slot in ("T3", "T4") else "A")
