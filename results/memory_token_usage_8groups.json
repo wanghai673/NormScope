@@ -1,0 +1,66 @@
+{
+ "everos": {
+  "chat_calls": 291,
+  "embed_calls": 275,
+  "prompt_tokens": 372390,
+  "completion_tokens": 48268,
+  "embed_tokens": 66072,
+  "calls_without_usage": 0
+ },
+ "test": {
+  "chat_calls": 0,
+  "embed_calls": 1,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "embed_tokens": 1,
+  "calls_without_usage": 0
+ },
+ "raw": {
+  "chat_calls": 0,
+  "embed_calls": 80,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "embed_tokens": 27403,
+  "calls_without_usage": 0
+ },
+ "langmem": {
+  "chat_calls": 49,
+  "embed_calls": 212,
+  "prompt_tokens": 103786,
+  "completion_tokens": 18345,
+  "embed_tokens": 31910,
+  "calls_without_usage": 0
+ },
+ "graphiti": {
+  "chat_calls": 519,
+  "embed_calls": 237,
+  "prompt_tokens": 1032892,
+  "completion_tokens": 59680,
+  "embed_tokens": 25658,
+  "calls_without_usage": 0
+ },
+ "mem0": {
+  "chat_calls": 48,
+  "embed_calls": 128,
+  "prompt_tokens": 433036,
+  "completion_tokens": 20887,
+  "embed_tokens": 40842,
+  "calls_without_usage": 0
+ },
+ "hindsight": {
+  "chat_calls": 137,
+  "embed_calls": 170,
+  "prompt_tokens": 686202,
+  "completion_tokens": 106355,
+  "embed_tokens": 77095,
+  "calls_without_usage": 0
+ },
+ "cognee": {
+  "chat_calls": 50,
+  "embed_calls": 400,
+  "prompt_tokens": 103788,
+  "completion_tokens": 53816,
+  "embed_tokens": 80822,
+  "calls_without_usage": 0
+ }
+}

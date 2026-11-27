@@ -1,0 +1,1986 @@
+[
+ {
+  "id": "C1y",
+  "repo": "click",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca037/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "When a bad-parameter hint is very long, the error text can run past the terminal. Please compact the displayed hint in `BadParameter.format_message`: when its visible terminal width is over 20 columns, keep the first 8 and last 8 characters of the hint and join them with `...`; otherwise leave it unchanged. Use the existing terminal-width measurement so ANSI styling does not inflate the count. For example, `param_hint='--abcdefghijklmnopqrstuvwxyz'` with message `must be positive` should produce `Invalid value for --abcdef...stuvwxyz: must be positive`.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T2": {
+    "task": "ca039/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Add a new `pretty_output` property on `Result` for readable test failure diffs. It should reflow the captured output as paragraphs through Click's existing text-wrapping helper using the helper's normal defaults, not a hardcoded width. For example, a command that prints `' '.join(['word'] * 16)` on one line should make `pretty_output` break after the first fifteen words, while a short `'hello'` output should stay `'hello'`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca031/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "When an invocation rejects a flag because someone attached a value to it, I want the returned Result to expose the option spellings involved so tests can assert them without checking the whole error string. For example, with `@click.option('--verbose', is_flag=True)`, invoking `['--verbose=yes']` should make `result.unexpected_flag_values` equal `['--verbose']`; normal successful runs should give `[]`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": true,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ca002/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a choice_option decorator in decorators.py that creates an option constrained to a small list of choices and, when no help argument is supplied, auto-generates a help line listing each choice separated by a spaced slash. Example: @click.choice_option('--color', choices=['red', 'blue'], default='red') should register an option whose help text is 'Allowed values: red / blue'; if the caller passes help='Color to use.', keep that help unchanged. Use the option's generated metavar to discover the displayed values rather than maintaining a second hard-coded list.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ca005/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In src/click/termui.py, when _build_prompt renders a Choice type, join the displayed choices with ` | ` instead of the current comma-space separator. Keep the surrounding parentheses and the rest of prompt construction unchanged. This affects the choice list shown by click.prompt, not error messages or metavars.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca008/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Please add an opt-in `envvar_from_path=True` keyword to `click.option` so an option can read an environment variable whose name is derived from the context’s already-formatted command path, the same string Click uses to show nested commands. For a command `app sync` with `@click.option('--api-key', envvar_from_path=True)`, setting `APP_SYNC_API_KEY=abc` should supply `abc`, while an explicit `--api-key def` should still win. Nested groups should be included so subcommands get naturally scoped env vars.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ca012/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add a new ExistingPaths parameter type for options that take several filesystem paths at once. It should accept a list or tuple, verify each path exists without opening it, and return the paths; on failure, report all missing paths in one error using Click's usual file-error wording for each one. For example, ['present.txt', 'missing-a.txt', 'missing-b.txt'] should mention missing-a.txt and missing-b.txt together, while ['present.txt'] succeeds.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nDon't touch the docs build config, it's fragile right now.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nNow the task. When a bad-parameter hint is very long, the error text can run past the terminal. Please compact the displayed hint in `BadParameter.format_message`: when its visible terminal width is over 20 columns, keep the first 8 and last 8 characters of the hint and join them with `...`; otherwise leave it unchanged. Use the existing terminal-width measurement so ANSI styling does not inflate the count. For example, `param_hint='--abcdefghijklmnopqrstuvwxyz'` with message `must be positive` should produce `Invalid value for --abcdef...stuvwxyz: must be positive`.",
+   "T2": "I like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nI ran into this area before; watch the edge cases with empty input.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nThe task: Add a new `pretty_output` property on `Result` for readable test failure diffs. It should reflow the captured output as paragraphs through Click's existing text-wrapping helper using the helper's normal defaults, not a hardcoded width. For example, a command that prints `' '.join(['word'] * 16)` on one line should make `pretty_output` break after the first fifteen words, while a short `'hello'` output should stay `'hello'`.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nKeep the diff small, please. No drive-by reformatting.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.",
+   "T5": "Test docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nDon't export it from the top-level `__init__` this time.\n\nTell me which files you changed when you're done.\n\nThe task: In src/click/termui.py, when _build_prompt renders a Choice type, join the displayed choices with ` | ` instead of the current comma-space separator. Keep the surrounding parentheses and the rest of prompt construction unchanged. This affects the choice list shown by click.prompt, not error messages or metavars.\n\nNo docstrings on the private helpers this time.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nKeep the diff small, please. No drive-by reformatting.\n\nLeave the `-> None` off the tests this time."
+  }
+ },
+ {
+  "id": "C2y",
+  "repo": "click",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca013/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "In src/click/_compat.py, make term_len report terminal display width rather than raw string length. It should still strip ANSI first, then count East Asian wide/fullwidth characters as two columns, combining marks as zero, and ordinary characters as one. Keep strip_ansi itself unchanged.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ca034/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "In `confirm`, when `default` is `None`, treat an empty answer as a negative answer immediately instead of showing “invalid input” and prompting again. Explicit `y`/`yes` and `n`/`no` should keep working exactly as they do now. Apply the empty check after stripping whitespace from the entered value.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca016/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Add a new exception type in exceptions.py for verbose diagnostic messages that automatically reflows its text, preserving paragraph breaks. Please make `WrappedClickException` subclass `ClickException`, and have `format_message()` pass the message through click's existing formatting utility without supplying an explicit width, so it uses the library's normal wrapping behavior. For example, `WrappedClickException('alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima').format_message()` should return that sentence on one line, while a two-paragraph message should keep the blank line between paragraphs.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ca011/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a new `HelpFormatter.write_file_dl` method for an input-files section. It should shorten each path in the first column to its basename, and when the existing filename display had to clean unprintable bytes it should append a ` [unprintable]` notice. For rows `[(\"docs/report.txt\", \"report file\"), (b\"docs/bad\\xff.txt\", \"binary file\")]`, the first column should be `report.txt` for the good file and the shortened cleaned basename plus ` [unprintable]` for the bad one.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ca019/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "Change Choice.get_metavar so required positional arguments wrap their choices in angle brackets, e.g. `<a|b>`, instead of the current curly-brace form. Options and optional arguments should continue using square brackets. Do not change how the choice values themselves are joined; only the wrapper for required arguments changes.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca005/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "When a command prompts with a Choice, our tests currently have to copy Click's prompt text to know which choices were offered. Please add a Result.prompt_choices property in the testing module that parses captured output and returns one list of offered choices per prompt. For a command that prompts once with a Choice among 'alpha' and 'beta', result.prompt_choices should be [['alpha', 'beta']]; with two prompts it should return two inner lists.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ca029/p",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "In `src/click/utils.py`, change `open_file`'s default `lazy` argument from `False` to `True`. With this default, a normal `click.open_file(path)` call should return a `LazyFile` and should not touch the filesystem until the handle is first used. Keep explicit `lazy=False` behavior eager, and update the docstring to reflect the new default.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nNow the task. In src/click/_compat.py, make term_len report terminal display width rather than raw string length. It should still strip ANSI first, then count East Asian wide/fullwidth characters as two columns, combining marks as zero, and ordinary characters as one. Keep strip_ansi itself unchanged.",
+   "T2": "Test docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nTell me which files you changed when you're done.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nThe task: In `confirm`, when `default` is `None`, treat an empty answer as a negative answer immediately instead of showing “invalid input” and prompting again. Explicit `y`/`yes` and `n`/`no` should keep working exactly as they do now. Apply the empty check after stripping whitespace from the entered value.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nExport it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.",
+   "T5": "Export policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nKeep the diff small, please. No drive-by reformatting.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nThe task: Change Choice.get_metavar so required positional arguments wrap their choices in angle brackets, e.g. `<a|b>`, instead of the current curly-brace form. Options and optional arguments should continue using square brackets. Do not change how the choice values themselves are joined; only the wrapper for required arguments changes.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file.\n\nDon't touch the docs build config, it's fragile right now.\n\nNo docstrings on the tests for this one.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back."
+  }
+ },
+ {
+  "id": "C3y",
+  "repo": "click",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca004/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add completion support for negative numeric option values. For a command whose `--level` option has custom shell completion returning `-5` and `-10`, typing `--level -1` and pressing Tab should call that option callback with `-1` and show the numeric completions, not fall back to option-name completion. Use the parser’s existing rule for splitting a leading dash from the rest of a token so we keep the sign with the number; don’t decide just from the first character.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T2": {
+    "task": "ca027/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Please change `_find_binary_reader` so a usable binary `.buffer` attribute wins over the stream's own `read` method. If an object exposes both and its `.buffer` returns bytes, return that buffer instead of the wrapper. Keep the existing fallback for objects that do not have a usable binary buffer.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca030/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Add a new `Result.short_help` attribute that `CliRunner.invoke()` populates from the invoked command’s normal short help. For a command whose help is `'Print a friendly greeting to the user.'`, `result.short_help` should be exactly that sentence; for clearly longer help text it should use Click’s existing shortening with an ellipsis.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T4": {
+    "task": "ca022/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Prompt defaults can become visually very wide. Please make the default hint in prompts wrap with Click's existing text-wrapping helper, leaving the helper's library default width in charge rather than adding another width setting, so a long default like 'alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron pi rho sigma tau upsilon phi chi psi omega' renders as a two-line default hint, while a short default like 'ok' stays on one line. Add coverage for both prompt and confirm.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ca003/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In src/click/parser.py, the parser currently appends the same parameter object to the returned order list every time that option appears. Please change it so repeated occurrences are deduplicated: order should keep only the first occurrence of each parameter object, while the parsed option values still update normally.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca009/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add an optional `help` argument to `click.prompt` (default `None`). When it is non-empty, print a compact one-line hint above the prompt by reusing the existing short-help summarizer with its normal defaults, rather than inventing new formatting. For example, `click.prompt('Project', help='Process files from the current directory and update the index after each successful batch of changes. The command is safe to rerun.')` should show `Project` and then `(Process files from the current directory...)` before reading the value.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ca014/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add an optional `help` argument to `click.prompt` that prints explanatory text before the question. Use the existing general text-wrapping behavior with its normal defaults, not a hand-rolled `textwrap` call, so the help block respects the same width as other help text. For example, `click.prompt('Name', help='This note explains the accepted values and is long enough to need a second line')` should show the note wrapped over two lines at the left margin, then the normal `Name: ` prompt; omitting `help` must leave output unchanged.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nKeep the diff small, please. No drive-by reformatting.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nNow the task. Add completion support for negative numeric option values. For a command whose `--level` option has custom shell completion returning `-5` and `-10`, typing `--level -1` and pressing Tab should call that option callback with `-1` and show the numeric completions, not fall back to option-name completion. Use the parser’s existing rule for splitting a leading dash from the rest of a token so we keep the sign with the number; don’t decide just from the first character.",
+   "T2": "Typing of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nI ran into this area before; watch the edge cases with empty input.\n\nThe task: Please change `_find_binary_reader` so a usable binary `.buffer` attribute wins over the stream's own `read` method. If an object exposes both and its `.buffer` returns bytes, return that buffer instead of the wrapper. Keep the existing fallback for objects that do not have a usable binary buffer.\n\nI like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.",
+   "T5": "Don't export it from the top-level `__init__` this time.\n\nLeave the `-> None` off the tests this time.\n\nKeep the public names short, I have to type them a lot.\n\nThe task: In src/click/parser.py, the parser currently appends the same parameter object to the returned order list every time that option appears. Please change it so repeated occurrences are deduplicated: order should keep only the first occurrence of each parameter object, while the parsed option values still update normally.\n\nNo docstrings on the private helpers this time.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter."
+  }
+ },
+ {
+  "id": "C4y",
+  "repo": "click",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca000/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add a small public helper for our docs generator: `Command.get_brief_help(limit=45)` should return the compact one-line description, appending ` (more)` after the summary when the generated summary was cut off by the truncation marker. For a command whose help is `Deploy now! Then wait for every service to become healthy and ready`, I expect `Deploy now! Then wait for every service to... (more)`; for `Create a new user`, I expect just `Create a new user` with no marker. Keep the normal `get_short_help_str` behavior unchanged.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ca031/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "In `src/click/parser.py`, when an explicit value is attached to a flag option, `_match_long_opt` currently says the option 'does not take a value'. Please change that user-facing error to say it 'does not accept a value' instead, and update the existing expectation for that message. Keep the option spelling and the surrounding error flow unchanged.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca015/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Docs tooling needs a quick map from each parameter name to its normalized machine-readable type kind, without every caller walking into the nested type-info dictionary itself. Add a public `Command.get_param_type_kinds(ctx)` method that returns that mapping using the type info each parameter’s `ParamType` already provides. For a command with `--count` of type `click.INT` and `--name` of type `click.STRING`, it should return `{'count': 'Int', 'name': 'String'}`; for a tuple type, use whatever kind that type’s info reports.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T4": {
+    "task": "ca027/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add an `input_transform` option to `CliRunner.invoke` so tests can rewrite stdin bytes before the command reads them. For example, a command that reads stdin and echoes it, invoked with input `b'my secret value'` and a transform that replaces `secret` with `****`, should output `my **** value\\n`; it should also work when the input is supplied as text or as an existing binary stream. Implement it as a binary stream wrapper that exposes the original stream as `.buffer` and feed that wrapper through the normal input-stream setup, so the rewrite applies uniformly to prompts and regular reads.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ca026/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "Long validation messages from `BadParameter` should wrap instead of running off the screen. Please format the complete displayed error—including the `Invalid value for ...` prefix—using the existing help-text wrapping helper with its standard default width and a two-space hanging indent. For example, with `--name` and message `this value is invalid because it exceeds the maximum allowed length`, the first line ends with `exceeds the` and the second line is `  maximum allowed length`.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca023/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "I would like `click.Choice` completions to optionally carry the owning parameter's spellings in their help text, so shell users can see which option or argument the values belong to. Add `show_param_help=False` to `Choice`; when true, completing `--mode`/`-m` with choices `fast` and `slow` should return each value with help text that names both option spellings using Click's normal parameter-hint rendering, and the default `False` should leave existing completions untouched.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ca007/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add an opt-in `show_remaining` argument to `click.progressbar`. When it is on, append a live `N% left` info item computed from the bar's already-formatted completion percentage, not from raw position values. With total 10 and 4 completed, show `60% left`; with total 8 and 1 completed, show `88% left`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nNow the task. Add a small public helper for our docs generator: `Command.get_brief_help(limit=45)` should return the compact one-line description, appending ` (more)` after the summary when the generated summary was cut off by the truncation marker. For a command whose help is `Deploy now! Then wait for every service to become healthy and ready`, I expect `Deploy now! Then wait for every service to... (more)`; for `Create a new user`, I expect just `Create a new user` with no marker. Keep the normal `get_short_help_str` behavior unchanged.",
+   "T2": "Export it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nKeep the diff small, please. No drive-by reformatting.\n\nThe task: In `src/click/parser.py`, when an explicit value is attached to a flag option, `_match_long_opt` currently says the option 'does not take a value'. Please change that user-facing error to say it 'does not accept a value' instead, and update the existing expectation for that message. Keep the option spelling and the surrounding error flow unchanged.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.",
+   "T5": "Don't touch the docs build config, it's fragile right now.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nNo docstrings on the tests for this one.\n\nThe task: Long validation messages from `BadParameter` should wrap instead of running off the screen. Please format the complete displayed error—including the `Invalid value for ...` prefix—using the existing help-text wrapping helper with its standard default width and a two-space hanging indent. For example, with `--name` and message `this value is invalid because it exceeds the maximum allowed length`, the first line ends with `exceeds the` and the second line is `  maximum allowed length`.\n\nTell me which files you changed when you're done.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export."
+  }
+ },
+ {
+  "id": "C5y",
+  "repo": "click",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca025/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Please update `term_len` in `_compat.py` so it measures terminal columns instead of raw character count. For example, CJK glyphs such as `界` and fullwidth forms such as `Ａ` should count as two columns, while ordinary ASCII stays one. Keep stripping ANSI color codes first as it does today.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ca015/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "In `ParamType.to_info_dict`, report the normalized class-derived kind under the key `type` instead of `param_type`, while keeping the existing `name` key and value unchanged. For example, `INT.to_info_dict()` should become `{'type': 'Int', 'name': 'integer'}`, and `STRING.to_info_dict()` should use `'String'`. Update the schema assertions in the existing tests to match the new shape.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca010/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Please add a `concise_help` decorator in `src/click/decorators.py` that can sit directly under `@command`. It should turn the callback's docstring into the same one-line summary Click already uses for command listings rather than a custom truncation: a short docstring like `\"\"\"Say hello.\"\"\"` should become help `Say hello.`, and a long descriptive paragraph should be shortened by that existing summary logic. If the callback has no docstring, leave help unset.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ca029/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Please add a new `PlainFile` parameter type in `src/click/types.py` for options that should be opened through `click.open_file` rather than Click's internal stream opener. Make its `convert` call `click.open_file` in read mode with its standard defaults, wrap OS errors with the usual filename context, and register a close hook when a context is available. For `--input hello.txt`, the callback should receive a readable file; for `--input missing.txt`, the command should not run and the output should contain Click's normal `Invalid value for '--input'` error.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ca008/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In `Context.command_path`, join nested command names with `::` instead of a space, so group `app` with subcommand `sync` reports `app::sync`. The top-level command path should remain just its own name. Update any code and tests that assert the old space-separated text.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca003/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Please add a public way for a command callback to ask how many times an option was supplied: Context.get_parameter_occurrence(\"name\"). For a flag declared as --verbose/-v, demo --verbose --verbose should return 2, demo -v should return 1, and omitting it should return 0.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ca034/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add a new public decorator `explicit_confirmation_option` for commands that should not run unless the user acknowledges interactively. It should add a `--confirm` flag: when the flag is supplied, the command runs directly; when omitted, it prompts for a yes/no answer and aborts on no. Example: invoking with no arguments and input `yes\\n` should run the command, while input `no\\n` should abort.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nNow the task. Please update `term_len` in `_compat.py` so it measures terminal columns instead of raw character count. For example, CJK glyphs such as `界` and fullwidth forms such as `Ａ` should count as two columns, while ordinary ASCII stays one. Keep stripping ANSI color codes first as it does today.",
+   "T2": "I like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nTell me which files you changed when you're done.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nThe task: In `ParamType.to_info_dict`, report the normalized class-derived kind under the key `type` instead of `param_type`, while keeping the existing `name` key and value unchanged. For example, `INT.to_info_dict()` should become `{'type': 'Int', 'name': 'integer'}`, and `STRING.to_info_dict()` should use `'String'`. Update the schema assertions in the existing tests to match the new shape.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.",
+   "T5": "Only run the tests for the module you touch, the full suite is slow on my laptop.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nLeave the `-> None` off the tests this time.\n\nThe task: In `Context.command_path`, join nested command names with `::` instead of a space, so group `app` with subcommand `sync` reports `app::sync`. The top-level command path should remain just its own name. Update any code and tests that assert the old space-separated text.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nNo docstrings on the private helpers this time.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nDon't export it from the top-level `__init__` this time."
+  }
+ },
+ {
+  "id": "C6y",
+  "repo": "click",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca020/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add a `HelpFormatter.write_summary(rows, col_max=30, col_spacing=2)` helper for compact two-column summaries: it should lay out rows like `write_dl` does and then append one blank line. With the current definition-list measurement and `col_max=30`, a first row whose term is an OSC-8 hyperlink around `Deploy` to `https://example.com` and whose value is `Ship the current build` should put the description on the next line, while a `Docs` / `Read the manual` row stays inline. Please reuse the existing measurement path rather than adding a separate escape parser.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ca009/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Please change `click.utils.make_default_short_help` so its default `max_length` is 50 instead of 45. Keep the explicit `max_length` argument fully authoritative, and do not change the existing truncation or ellipsis logic.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca019/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Add a `format_choice_hint(choice, param)` helper in formatting.py that returns a one-line allowed-values hint for help text. For a required positional argument with choices fast and slow, return `required: fast, slow`; for an optional option with the same choices, return `optional: fast, slow`. The helper should use the Choice type's own metavar to decide requiredness, not a separate required boolean.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ca017/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Please add a new top-level helper `click.captured_output_lines(cli, args=None, input=None)` that runs the command through the standard test runner and returns a list of captured output lines. Split on the newline characters present in the captured text and drop the final empty piece: a command echoing 'alpha' then 'beta' should give `['alpha', 'beta']`, and no output should give `[]`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ca006/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In `split_arg_string`, treat an unquoted `#` as a comment marker and discard the rest of the current line. For example, `split_arg_string(\"alpha #beta\")` should return `[\"alpha\"]`, while `split_arg_string(\"alpha '#beta'\")` should keep the quoted hashtag and return `[\"alpha\", \"#beta\"]`.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca013/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Zsh and fish completion menus get too wide when option help is long. Add help truncation for those shells: if a CompletionItem help string is longer than 40 visible characters after ignoring ANSI color escapes, show the first 37 characters followed by three dots; otherwise show it unchanged. For example, help abcdefghijklmnopqrstuvwxyz0123456789ABCDE should become abcdefghijklmnopqrstuvwxyz0123456789A..., while Short help stays as is. Please reuse Click's existing visible-length helper instead of raw len; bash ignores help, so leave it alone.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ca028/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Please add `format_choice_prompt` in `utils.py` for printable help screens. It should take a question, a sequence of allowed choices, and an optional default; reuse the same prompt rendering that `click.prompt` uses for Choice types so the question and default convention stay consistent, then reformat that rendered prompt's inline allowed-value list into one indented `- ` bullet per value instead of duplicating the list rendering itself. For example, `format_choice_prompt(\"Pick a color\", [\"red\", \"green\", \"blue\"])` should return a first line `Pick a color:` followed by three bullet lines, and with `default=\"green\"` it should add a final `default: green` line.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nNo need to commit, I'll look at the working tree.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nNow the task. Add a `HelpFormatter.write_summary(rows, col_max=30, col_spacing=2)` helper for compact two-column summaries: it should lay out rows like `write_dl` does and then append one blank line. With the current definition-list measurement and `col_max=30`, a first row whose term is an OSC-8 hyperlink around `Deploy` to `https://example.com` and whose value is `Ship the current build` should put the description on the next line, while a `Docs` / `Read the manual` row stays inline. Please reuse the existing measurement path rather than adding a separate escape parser.",
+   "T2": "Export it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nThe task: Please change `click.utils.make_default_short_help` so its default `max_length` is 50 instead of 45. Keep the explicit `max_length` argument fully authoritative, and do not change the existing truncation or ellipsis logic.\n\nI ran into this area before; watch the edge cases with empty input.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nHave a look whether the same problem exists in a neighbouring function while you're in there.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.",
+   "T5": "Docstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nI ran into this area before; watch the edge cases with empty input.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nThe task: In `split_arg_string`, treat an unquoted `#` as a comment marker and discard the rest of the current line. For example, `split_arg_string(\"alpha #beta\")` should return `[\"alpha\"]`, while `split_arg_string(\"alpha '#beta'\")` should keep the quoted hashtag and return `[\"alpha\", \"#beta\"]`.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file.\n\nHave a look whether the same problem exists in a neighbouring function while you're in there.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nNo docstrings on the tests for this one."
+  }
+ },
+ {
+  "id": "C7y",
+  "repo": "click",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ca006/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "I need `click.prompt` to support tuple types by letting a user enter all values on one line and splitting it like shell words. For example, `click.prompt('Pair', type=(str, str))` with input `alpha #beta` should return `('alpha', '#beta')`, while `click.prompt('Point', type=(int, int))` with input `10 20` should return `(10, 20)`. Double-quoted pieces with spaces should stay together, e.g. `\"Ada Lovelace\" math` should become `('Ada Lovelace', 'math')` for two string values.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ca022/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Please change formatting.wrap_text so its default width is 60 instead of 78, making callers that omit a width wrap more narrowly. Explicit width arguments should continue to work exactly as they do now.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ca035/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Please add a new decorator in `decorators.py` named `choice_option` for options backed by `click.Choice`: it should accept the option declarations, a `choices` sequence, and ordinary option kwargs, then append an allowed-values summary to the option's help. For example, `@choice_option('--mode', choices=['fast', 'slow', 'turbo'], help='Mode selector.')` should give help text `Mode selector. Allowed (3): fast, slow, turbo`, while omitting user help should give just `Allowed (3): fast, slow, turbo`. Derive both the count and displayed values by parsing the metavar string that Click produces for the constructed option rather than by rereading the raw choices list, so the helper reflects Click's own rendering.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ca033/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "We need a convenience for manually driving progress bars from worker loops: please add a `step()` method to the object returned by `click.progressbar` that advances one item and returns the new absolute position. With `with click.progressbar(length=3) as bar:`, the first `bar.step()` should return `1`, the second should return `2`, and the third should return `3`, so we can put those numbers in log lines.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T5": {
+    "task": "ca017/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In src/click/testing.py, update Result.output so that after decoding and handling CRLF it also converts any remaining standalone carriage returns into newline characters. This should make overwrite-style terminal output show as separate lines while keeping ordinary LF and CRLF output clean.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ca038/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add a compact table writer to `HelpFormatter` in formatting.py for small help summaries. It should take rows of cells, compute the visible width of each column, pad cells so later columns line up, and write one row per line; for example `[('--a','alpha','first'), ('--bb','beta','second')]` should come out as a neat three-column table. Legacy rows sometimes contain tab characters, so use the same visible-width logic that help formatting already uses for padding rather than guessing from `len()`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ca032/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add an optional `return_key` parameter to `click.pause`. With `return_key=True`, a normal key like 'x' should come back as 'x', while an end-of-input signal should be reported as an empty string and not raise; examples: pressing 'x' gives 'x', ending input gives ''. Calls without `return_key` should keep their current behavior.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nI ran into this area before; watch the edge cases with empty input.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nNow the task. I need `click.prompt` to support tuple types by letting a user enter all values on one line and splitting it like shell words. For example, `click.prompt('Pair', type=(str, str))` with input `alpha #beta` should return `('alpha', '#beta')`, while `click.prompt('Point', type=(int, int))` with input `10 20` should return `(10, 20)`. Double-quoted pieces with spaces should stay together, e.g. `\"Ada Lovelace\" math` should become `('Ada Lovelace', 'math')` for two string values.",
+   "T2": "Export policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nI like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nThe task: Please change formatting.wrap_text so its default width is 60 instead of 78, making callers that omit a width wrap more narrowly. Explicit width arguments should continue to work exactly as they do now.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.",
+   "T5": "No docstrings on the private helpers this time.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nThe task: In src/click/testing.py, update Result.output so that after decoding and handling CRLF it also converts any remaining standalone carriage returns into newline characters. This should make overwrite-style terminal output show as separate lines while keeping ordinary LF and CRLF output clean.\n\nDon't export it from the top-level `__init__` this time.\n\nKeep the public names short, I have to type them a lot.\n\nKeep the diff small, please. No drive-by reformatting.\n\nLeave the `-> None` off the tests this time."
+  }
+ },
+ {
+  "id": "J1y",
+  "repo": "jinja",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja019/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "I'd like a small helper in the symbol-tracking layer that reports the local-to-original mapping for names a template renames during a `from ... import`. For `{% from 'helpers' import greet %}` it should return `{}`, and for `{% from 'helpers' import render as r %}` it should return `{'r': 'render'}`; please keep it focused and testable offline.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja061/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Change BytecodeCache.get_source_checksum so it returns an algorithm-prefixed checksum string, specifically `sha1:` followed by the existing lowercase hex digest, instead of a bare digest. Keep the digest calculation deterministic for all sources. Update any internal tests or comparisons that assume the old raw digest format.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja001/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "I need a helper in debug.py that produces a short source-line context for template errors, including a label for where the source came from. It should call the active loader's existing `get_source` for the template name and use the returned filename when present, but fall back to the template name when the loader gives no filename—for example a FunctionLoader that returns only `\"Hello\"` for `greeting.html` should report `greeting.html`, and a DictLoader for `pages/index.html` should report `pages/index.html`. Please keep it to one requested line plus an optional caret, without changing existing traceback formatting.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja027/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a new filter localspreview in filters.py that takes a mapping of debug local values and returns up to count entries as name=value joined by commas. For example, {{ {'z': 1, 'a': 2, 'm': 3}|localspreview(2) }} should render z=1, a=2, and {{ {'z': 1, 'a': 2, 'm': 3}|localspreview(4) }} should render all three. Build the mapping through the existing traceback-local collection helper instead of iterating the input mapping directly, so the preview follows the same local-resolution rules as traceback debugging.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja011/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "Change `Symbols.dump_param_targets` so it walks every `Symbols` object in the `parent` chain and collects each level's `VAR_LOAD_PARAMETER` target. The current scope's parameter targets must still be included, and targets from all ancestors must be added too. Keep the return value a set of the same target strings, and do not include ordinary resolve or alias loads.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja002/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add `SandboxRangeError` in exceptions.py with a classmethod `from_overflow_error`. It should wrap the OverflowError produced when a sandbox range exceeds the limit and expose the allowed size as `.limit`. For example, catching the OverflowError from `safe_range(0, MAX_RANGE + 1)` and converting it should give `limit == MAX_RANGE`; a random OverflowError should raise ValueError.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja026/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "I need a small utility in utils.py for our template browser: `template_neighbors(loader, current)` should return the previous and next template names around the current one, using whatever order the loader itself reports. With a FileSystemLoader over files named A.html, B.html, a.html, b.html, asking for B.html should return ('A.html', 'a.html'); asking for A.html should return (None, 'B.html').",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nNow the task. I'd like a small helper in the symbol-tracking layer that reports the local-to-original mapping for names a template renames during a `from ... import`. For `{% from 'helpers' import greet %}` it should return `{}`, and for `{% from 'helpers' import render as r %}` it should return `{'r': 'render'}`; please keep it focused and testable offline.",
+   "T2": "Tell me which files you changed when you're done.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nThe task: Change BytecodeCache.get_source_checksum so it returns an algorithm-prefixed checksum string, specifically `sha1:` followed by the existing lowercase hex digest, instead of a bare digest. Keep the digest calculation deterministic for all sources. Update any internal tests or comparisons that assume the old raw digest format.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nExport it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.",
+   "T5": "I'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file.\n\nThe task: Change `Symbols.dump_param_targets` so it walks every `Symbols` object in the `parent` chain and collects each level's `VAR_LOAD_PARAMETER` target. The current scope's parameter targets must still be included, and targets from all ancestors must be added too. Keep the return value a set of the same target strings, and do not include ordinary resolve or alias loads.\n\nNo docstrings on the tests for this one.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nTell me which files you changed when you're done.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export."
+  }
+ },
+ {
+  "id": "J2y",
+  "repo": "jinja",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja053/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "When a template fails with an unexpected character, the error only gives its position; add a short source excerpt so people can find the bad character in generated templates. Please wrap that excerpt at 60 columns using the same wrapping behavior as the `wordwrap` filter, passing only the width needed for the excerpt, and put a caret under the offending character. For `{{ 1 ? 2 }}`, show the full expression line with a caret under `?`; for a line containing a long unbroken token such as a 70-character URL, the excerpt must still fit within the 60-column block rather than overflow.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja018/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "`TemplateNotFound.__str__` currently returns the raw message, so a bare loader miss just prints the template name. Change it so instances created without an explicit `message` stringify as `Template not found: <name>`; the `.message` attribute should still be the original name. If a custom message was passed, keep `str()` returning that custom text unchanged.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja061/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Add a new helper `cache_checksum_problem(source)` in `src/jinja2/utils.py` for cache diagnostics. It should ask the bytecode cache to compute the checksum for a source and return `None` only when the generated value looks like a normal 40-character lowercase hexadecimal digest; otherwise return a short message explaining the problem. For example, `cache_checksum_problem('hello')` and `cache_checksum_problem('')` should both be `None`. Use the bytecode cache's own source-checksum computation rather than hashing again in utils, and import it lazily to avoid import cycles.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja022/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a helper `describe_template_references` to `debug.py` that turns a template source into a one-line hint for syntax-error pages. For `{% include helper %}` it should say `References: <dynamic>`, and for `{% extends 'layout.html' %}{% include 'sidebar.html' %}` it should say `References: layout.html, sidebar.html`. Use `jinja2.meta.find_referenced_templates` to collect references rather than reparsing the template.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja051/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In src/jinja2/debug.py, the fake traceback frame for the compiled template root currently uses the co_name 'top-level template code'; change that label to 'root template code'. Leave the generic 'template' fallback and the existing quoted block labels unchanged. Update the debug tests that assert the old root wording.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja017/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Please add a sandboxed native environment to sandbox.py that combines the existing sandbox protections with native rendering, so untrusted templates can produce Python values without allowing unsafe access. With a template like `{{ [1, 2] }}`, `render()` should return `[1, 2]`; with `{{ {'a': 1} }}`, it should return the dict; and `{{ ''.__class__ }}` should still raise `SecurityError`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja018/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Please add a `NestedFileSystemBytecodeCache` to `bccache.py` that stores cache files under directories matching the template name. Use the same template-path splitting/safety rules as the loaders rather than inventing a new check; for `admin/users.html` with cache key `abc`, I expect `<cache_dir>/admin/users.html.__jinja2_abc.cache` and `admin` should be created as needed. For an unsafe name like `../secrets.html`, it should reject it and raise `TemplateNotFound` with a clear cache refusal that includes the existing path-safety text, for example `cannot cache template '../secrets.html': ../secrets.html`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nNow the task. When a template fails with an unexpected character, the error only gives its position; add a short source excerpt so people can find the bad character in generated templates. Please wrap that excerpt at 60 columns using the same wrapping behavior as the `wordwrap` filter, passing only the width needed for the excerpt, and put a caret under the offending character. For `{{ 1 ? 2 }}`, show the full expression line with a caret under `?`; for a line containing a long unbroken token such as a 70-character URL, the excerpt must still fit within the 60-column block rather than overflow.",
+   "T2": "Typing of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nI like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nThe task: `TemplateNotFound.__str__` currently returns the raw message, so a bare loader miss just prints the template name. Change it so instances created without an explicit `message` stringify as `Template not found: <name>`; the `.message` attribute should still be the original name. If a custom message was passed, keep `str()` returning that custom text unchanged.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nNo need to commit, I'll look at the working tree.\n\nDon't touch the docs build config, it's fragile right now.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.",
+   "T5": "Don't export it from the top-level `__init__` this time.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nNo docstrings on the private helpers this time.\n\nThe task: In src/jinja2/debug.py, the fake traceback frame for the compiled template root currently uses the co_name 'top-level template code'; change that label to 'root template code'. Leave the generic 'template' fallback and the existing quoted block labels unchanged. Update the debug tests that assert the old root wording.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nLeave the `-> None` off the tests this time.\n\nKeep the diff small, please. No drive-by reformatting.\n\nTell me which files you changed when you're done."
+  }
+ },
+ {
+  "id": "J3y",
+  "repo": "jinja",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja020/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add an `Environment.line_comment_word_counts(source)` helper for a template linter. Given `line_comment_prefix='#'`, `line_comment_word_counts('Hello\\n# first note\\n{{ value }}\\n# second\\n')` should return `[(2, 2), (4, 1)]`: each result is the line number and number of whitespace-separated words in the corresponding line comment.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja064/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Please update SecurityError in exceptions.py so that its printed form always starts with the headline 'Security error: '. Keep the .message property and constructor arguments unchanged. If there is no message, print just 'Security error' with no trailing separator.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja044/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "We need a small logging helper in `src/jinja2/utils.py` named `format_missing_template_bullets`. The logging pipeline only gives it the formatted exception string that `str(exc)` produces for a `TemplatesNotFound`, so parse the candidate names out of that text and return one bullet per candidate, dropping the generic sentence. For the formatted text from `TemplatesNotFound([\"base.html\", \"child.html\"])`, return `- base.html\\n- child.html`; for the formatted text from `TemplatesNotFound([\"index.html\"])`, return `- index.html`. If the text does not match the standard multi-template-not-found preamble, return it unchanged.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja006/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Can you add a template_names filter for our editor diagnostics? Given a string of template source, it should return the distinct names that are read, following the order the parsed AST encounters them; for `{% if flag %}{{ inner }}{% endif %}{{ outer }}` I expect `['flag', 'inner', 'outer']`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja009/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "Change `has_safe_repr` in src/jinja2/compiler.py so exact bytes objects whose contents are ASCII are treated as safe scalar constants, just like strings. The compiler can emit their repr directly, so a `Const(b'abc')` should count as embeddable. Keep bytearray and memoryview out of the safe set.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja066/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add an `error_source` filter for debugging: it accepts the rendered string of a Jinja `TemplateSyntaxError` and returns the one template line shown as the source excerpt, with the error formatter’s leading display indentation removed; return an empty string if no source excerpt is shown. Example: `e = TemplateSyntaxError(\"bad\", 2, \"page.html\"); e.source = \"ok\\n{{ user.name }}\\n\"; error_source(str(e))` should return `{{ user.name }}`. Another example: `e.source = \"ok\\n    {{ item }}\\n\"` should return `{{ item }}`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja032/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add a TemplateCacheError exception for custom bytecode cache backends. It should accept a template name and an optional filename, expose both as attributes, and when no explicit message is passed, generate a default message that includes a short stable cache key for the template. For TemplateCacheError('abc'), the message should contain a9993e3647; for TemplateCacheError('abc', 'tpl.html'), the filename should be available and the key should correspond to that name/filename pair. Use the cache’s existing key derivation and show only the first ten characters.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nHave a look whether the same problem exists in a neighbouring function while you're in there.\n\nNow the task. Add an `Environment.line_comment_word_counts(source)` helper for a template linter. Given `line_comment_prefix='#'`, `line_comment_word_counts('Hello\\n# first note\\n{{ value }}\\n# second\\n')` should return `[(2, 2), (4, 1)]`: each result is the line number and number of whitespace-separated words in the corresponding line comment.",
+   "T2": "Only run the tests for the module you touch, the full suite is slow on my laptop.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nThe task: Please update SecurityError in exceptions.py so that its printed form always starts with the headline 'Security error: '. Keep the .message property and constructor arguments unchanged. If there is no message, print just 'Security error' with no trailing separator.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nExport it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.",
+   "T5": "Docstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nTell me which files you changed when you're done.\n\nKeep the diff small, please. No drive-by reformatting.\n\nThe task: Change `has_safe_repr` in src/jinja2/compiler.py so exact bytes objects whose contents are ASCII are treated as safe scalar constants, just like strings. The compiler can emit their repr directly, so a `Const(b'abc')` should count as embeddable. Keep bytearray and memoryview out of the safe set.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nNo docstrings on the tests for this one.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file."
+  }
+ },
+ {
+  "id": "J4y",
+  "repo": "jinja",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja014/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add a cache-warming helper to BytecodeCache that counts how often each fixed template is referenced by a template source, so our warmer can prioritize partials that appear multiple times. Example: a source that includes `sidebar.html` twice and `footer.html` once should report 2 for sidebar and 1 for footer; a source with a single `sidebar.html` include should report 1. Ignore dynamic references for this count.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja066/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "In `TemplateSyntaxError.__str__`, change the displayed source excerpt from four plain leading spaces to a visible gutter: four spaces, a pipe, and a space, then the stripped source line. Leave the message and location lines unchanged. Update the tests that currently expect the old plain indentation.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja008/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Please add a public `Environment.suggest_extension_tags(source)` helper for our editor integration. When a template uses an unknown block tag, recover the tag name from the parser's existing unknown-tag error message and return close matches from the block tags provided by enabled extensions; for example, with the i18n extension enabled, `{% transate %}` should suggest `['trans']`, while a valid template should return `[]`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T4": {
+    "task": "ja062/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Please add a new `Environment.select_template_with_hint(names, parent=None, globals=None)` method that tries templates just like `select_template`, but when all fail it appends a close-match suggestion to the `TemplatesNotFound` message. Use the attempted-names list attached to the exception, not the original argument, to identify the final attempt, then compare that name against `self.list_templates()` with `difflib.get_close_matches`. For example, `names=['about.html', 'indexx.html']` with available `'index.html'` should suggest `'index.html'`, while `['foo.html', 'bar.html']` with no close available template should leave the message unchanged.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   },
+   "T5": {
+    "task": "ja032/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "BytecodeCache.get_cache_key currently returns a bare SHA-1 hex digest. Make the cache key self-describing by prefixing the hex digest with sha1- (lowercase, no spaces), while keeping the digest over the same name/filename input. Update the docstring to document the key format.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja000/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "When sandboxed code calls an unknown filter, I want that to raise SecurityError instead of the normal missing-filter runtime error, but errors raised inside a registered filter must still come through unchanged. For example, call_filter('nope', 1) on a SandboxedEnvironment should raise SecurityError, while a registered filter that raises TemplateRuntimeError('kaboom') should still surface that exact error. Please implement this by catching and rewriting the base environment's missing-filter failure, not by pre-checking the filter table.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja005/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "When a syntax error reports an unexpected token, I want the rewritten traceback to include the template line with a caret under that exact token. For example, a template line `{{ foo bar }}` should show a caret under `bar`; please take the token text from the error message we already generate instead of writing a second parser. Add the excerpt logic in debug.py and a focused test for it.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nIf something unrelated is failing, just tell me, don't fix it.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nNow the task. Add a cache-warming helper to BytecodeCache that counts how often each fixed template is referenced by a template source, so our warmer can prioritize partials that appear multiple times. Example: a source that includes `sidebar.html` twice and `footer.html` once should report 2 for sidebar and 1 for footer; a source with a single `sidebar.html` include should report 1. Ignore dynamic references for this count.",
+   "T2": "Typing of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nI like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nThe task: In `TemplateSyntaxError.__str__`, change the displayed source excerpt from four plain leading spaces to a visible gutter: four spaces, a pipe, and a space, then the stripped source line. Leave the message and location lines unchanged. Update the tests that currently expect the old plain indentation.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nNo need to commit, I'll look at the working tree.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.",
+   "T5": "Leave the `-> None` off the tests this time.\n\nKeep the public names short, I have to type them a lot.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nThe task: BytecodeCache.get_cache_key currently returns a bare SHA-1 hex digest. Make the cache key self-describing by prefixing the hex digest with sha1- (lowercase, no spaces), while keeping the digest over the same name/filename input. Update the docstring to document the key format.\n\nTell me which files you changed when you're done.\n\nNo docstrings on the private helpers this time.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nDon't export it from the top-level `__init__` this time."
+  }
+ },
+ {
+  "id": "J5y",
+  "repo": "jinja",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja016/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add an opt-in `verbose_mutation_errors` flag to `ImmutableSandboxedEnvironment`. When it is on, accessing a blocked mutation method on a list should raise `SecurityError` with a message that lists the blocked operation names using the existing `Joiner` helper; for example, `{{ xs.append(1) }}` should mention `append`, `extend`, and `sort`. With the flag off, keep the current message.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja002/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Please reword the OverflowError raised by `safe_range` so the numeric limit is shown plainly instead of by the internal `MAX_RANGE` constant name. For the default limit it should read `Range too big. The sandbox blocks ranges larger than 100000 items.` while still raising OverflowError and using the actual `MAX_RANGE` value. Keep the change limited to the message construction in `safe_range` and update any tests that pin the old wording.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja046/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Add a helper in idtracking that builds a compact one-line diagnostic for an unknown symbol reference. It should reuse TemplateSyntaxError to render the source excerpt, but then return the raw offending source line, e.g. `Unknown symbol 'missing' at line 2: {{ missing }}` for source `a\\n{{ missing }}\\n`; when no source is given, omit the excerpt. Please don’t re-slice the source yourself—take the already-rendered syntax-error preview and pull out just the source text.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja063/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a cached helper on Node for template tooling: `node.find_all_cached(SomeNodeType)` should return the same tuple of matching descendants on repeated calls, using a bounded LRU cache shared by the nodes module. For example, on a template with one Block, calling `find_all_cached(Block)` twice should return that one block both times; asking for `find_all_cached(Break)` should return an empty tuple. Please use `LRUCache.get(key)` for the hit test rather than an `in` check or an explicit fallback argument, then store the matched tuple under that key, and add a way to clear the shared find cache.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja044/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In `src/jinja2/exceptions.py`, change the synthesized message in `TemplatesNotFound` so the missing template names are separated by `'; '` instead of `', '`. Keep the existing `none of the templates given were found:` prefix and the handling of `Undefined` entries exactly as they are. Update the exception tests to expect the new separator.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja035/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "I want a cache inspector to show how many source lines each bytecode bucket came from. For example, a source 'hello' should report 1 line and 'hello\\nworld' should report 2. Please add this to the normal bucket creation path and reuse the lexer's existing newline-counting behaviour so the numbers stay consistent with template processing.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ja011/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Add an opt-in strict mode (`environment.check_unused_macro_params = True`, default off) that raises `TemplateAssertionError` when a macro or call-block parameter is never read in that body. Use the compiler's existing parameter-target tracking set as the source of truth for which parameters belong to the frame, rather than re-deriving just from the syntax argument list. With the flag on, `{% macro card(title, price) %}{{ title }}{% endmacro %}` should fail on `price`, while `{% macro card(title) %}{{ title }}{% endmacro %}` and `{% macro outer(x) %}{% macro inner(y) %}{{ y }}{% endmacro %}{{ x }}{% endmacro %}` should compile.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nNo need to commit, I'll look at the working tree.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nNow the task. Add an opt-in `verbose_mutation_errors` flag to `ImmutableSandboxedEnvironment`. When it is on, accessing a blocked mutation method on a list should raise `SecurityError` with a message that lists the blocked operation names using the existing `Joiner` helper; for example, `{{ xs.append(1) }}` should mention `append`, `extend`, and `sort`. With the flag off, keep the current message.",
+   "T2": "Test docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nExport it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.\n\nNo need to commit, I'll look at the working tree.\n\nThe task: Please reword the OverflowError raised by `safe_range` so the numeric limit is shown plainly instead of by the internal `MAX_RANGE` constant name. For the default limit it should read `Range too big. The sandbox blocks ranges larger than 100000 items.` while still raising OverflowError and using the actual `MAX_RANGE` value. Keep the change limited to the message construction in `safe_range` and update any tests that pin the old wording.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nDon't touch the docs build config, it's fragile right now.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.",
+   "T5": "Docstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nNo docstrings on the tests for this one.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nThe task: In `src/jinja2/exceptions.py`, change the synthesized message in `TemplatesNotFound` so the missing template names are separated by `'; '` instead of `', '`. Keep the existing `none of the templates given were found:` prefix and the handling of `Undefined` entries exactly as they are. Update the exception tests to expect the new separator.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nKeep the diff small, please. No drive-by reformatting.\n\nNo need to commit, I'll look at the working tree.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file."
+  }
+ },
+ {
+  "id": "J6y",
+  "repo": "jinja",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja024/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add an Environment method `first_template_name(prefix=\"\")` that returns the first matching name from the loader's existing template listing, without re-sorting the list yourself, or raises TemplateNotFound. We need it for a landing-page selector that just takes the first template the active loader exposes. With a FileSystemLoader over a directory containing `Zebra.html` and `apple.html`, `env.first_template_name()` should return `Zebra.html`; with prefix `\"app\"` it should return `\"apple.html\"`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja004/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Please change `htmlsafe_json_dumps` so the Unicode escapes it emits for `<` and `>` use uppercase hex digits (`\\u003C` and `\\u003E`) instead of the current lowercase forms. The result should remain valid JSON Markup and all existing calls should keep working. Do not change the other replacements unless the follow-up asks for it.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja010/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "On our error page I need the expected closing tags for an unfinished template block as a real list. In the traceback-rewriting path, please derive that list from the syntax error message we already get and attach it as `expected_tags`; for `{% if true %}hi` it should be `['elif', 'else', 'endif']`, and for `{% for x in xs %}hi` it should be `['endfor', 'else']`. Use an empty list when the message does not name any expected tags.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja065/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a debug helper that extracts the source-line text from the formatted text of a `TemplateSyntaxError`, so a UI can highlight the offending line without duplicating the exception formatter. For `err = TemplateSyntaxError('bad', 2, name='page.html'); err.source = 'alpha\\nbeta'`, the helper should return `'beta'`; if `err.source` is `None`, it should return `None`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja062/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In `TemplatesNotFound.__init__`, store the attempted template names in reverse order so `templates[0]` is the most recently attempted name. Keep the default rendered message exactly in the original attempt order, and keep the inherited `name` value based on the original final attempted template.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja068/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add a small i18n-aware symbol helper in `idtracking.py` named `single_message_keys(node)` that maps line numbers to literal single-message gettext keys. For `Environment().parse('{{ _('Hello') }}')` it should return `{1: {'Hello'}}`, while `{{ ngettext('one', 'many', n) }}` should add nothing because it carries multiple messages. Please use `extract_from_ast` with its normal defaults rather than adding a separate extraction path.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja060/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "We need a stricter sandbox mode for untrusted templates where item access is only allowed when the value passes the environment's existing `sequence` test. Please add a new environment class in sandbox.py for that, overriding `getitem` so non-sequence values return Undefined instead of trying attribute fallback. A list lookup `{{ items[0] }}` with `items=[10, 20]` should render `10`; a settings lookup `{{ settings['theme'] }}` with `settings={'theme': 'dark'}` should render `dark`.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nDon't touch the docs build config, it's fragile right now.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nNow the task. Add an Environment method `first_template_name(prefix=\"\")` that returns the first matching name from the loader's existing template listing, without re-sorting the list yourself, or raises TemplateNotFound. We need it for a landing-page selector that just takes the first template the active loader exposes. With a FileSystemLoader over a directory containing `Zebra.html` and `apple.html`, `env.first_template_name()` should return `Zebra.html`; with prefix `\"app\"` it should return `\"apple.html\"`.",
+   "T2": "Don't touch the docs build config, it's fragile right now.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nThe task: Please change `htmlsafe_json_dumps` so the Unicode escapes it emits for `<` and `>` use uppercase hex digits (`\\u003C` and `\\u003E`) instead of the current lowercase forms. The result should remain valid JSON Markup and all existing calls should keep working. Do not change the other replacements unless the follow-up asks for it.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nI like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.",
+   "T5": "API docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nLeave the `-> None` off the tests this time.\n\nThe task: In `TemplatesNotFound.__init__`, store the attempted template names in reverse order so `templates[0]` is the most recently attempted name. Keep the default rendered message exactly in the original attempt order, and keep the inherited `name` value based on the original final attempted template.\n\nNo docstrings on the private helpers this time.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nDon't export it from the top-level `__init__` this time.\n\nTell me which files you changed when you're done."
+  }
+ },
+ {
+  "id": "J7y",
+  "repo": "jinja",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja009/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "I need a small helper for AST debugging in nodes.py: a `Node.embeddable_constants()` method that walks the tree and returns the literal values the compiler would be willing to put directly into generated Python. For example, a template containing `{{ 42 }} {{ 'ok' }} {{ [1, 2] }}` should return `[42, 'ok', [1, 2]]`, while a `Const` holding a binary payload like `b'blob'` should be skipped because the compiler would not embed it directly. Please reuse the compiler's existing safe-representation rule so the list matches what the compiler actually embeds.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja051/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "On exceptions that go through `Environment.handle_exception`, I’d like the raised exception to carry a new `.location` attribute describing where it came from in the template. For `{{ 1/0 }}` I expect `.location == 'top-level template'`; for `{% block body %}{{ 1/0 }}{% endblock %}`, I expect `'block body'`. Use the existing rewritten traceback information rather than guessing from the exception message, and return `'outside template'` when no template frame is present.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja021/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Please add a new `{% native_section \"fragment.html\" %}` extension tag in ext.py for sites using NativeEnvironment. It should load the named template with the current environment, render it, and wrap the rendered result in `<section>...</section>` unless the fragment produced no native result at all. For example, an empty fragment file should add no text, while a fragment containing `{{ [] }}` should produce `<section>[]</section>` and `{{ 0 }}` should produce `<section>0</section>`, so don't skip merely falsy values.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja067/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add an optional process-local cache to MemcachedBytecodeCache so repeated loads of the same bucket do not go back to memcached. Make it opt-in with a size argument; default 0 should preserve current behavior. Reuse the project's existing bounded cache utility rather than inventing another one: with size 2 and a client preloaded with bytecode for buckets a, b, and c, loading a, b, a, c, then b should ask the client for a, b, and c only—the final b should be served from the local cache.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": true,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T5": {
+    "task": "ja068/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "Change the default value of `extract_from_ast`'s `babel_style` parameter from `True` to `False`, so the default extraction for `{{ _(\"Hello\") }}` becomes `(1, \"_\", (\"Hello\",))` instead of `(1, \"_\", \"Hello\")`. Update the function's doc examples and tests to describe that new default. This is about the public default behavior, not a new extraction option.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja004/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add a `{% jsonpreview value %}` extension tag that renders a value as readable JSON for display. It should show normal characters for the HTML-sensitive bits that the library’s HTML-safe JSON helper protects, instead of showing their escape sequences. For example, `{% jsonpreview data %}` with `data={\"code\": \"<script>alert(1)</script>\", \"quote\": \"'\"}` should render `{\"code\": \"<script>alert(1)</script>\", \"quote\": \"'\"}`. Use the existing HTML-safe JSON helper so the output stays valid JSON.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja064/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Please add a public explain_security_error helper to SandboxedEnvironment in sandbox.py that turns a caught security exception into a structured report for template authors. It should classify only the exact whole-message forms the sandbox already emits: for an immutable sandbox blocking {{ data.clear() }} with a dict data, return {'kind': 'unsafe_attribute', 'attribute': 'clear', 'object_type': 'dict'}; for an unsafe callable, return {'kind': 'unsafe_callable', 'target': repr(callable)}. If the whole text does not fit those forms, return {'kind': 'other'} instead of guessing.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": true,
+     "private_helpers": false
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nNo need to commit, I'll look at the working tree.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nNow the task. I need a small helper for AST debugging in nodes.py: a `Node.embeddable_constants()` method that walks the tree and returns the literal values the compiler would be willing to put directly into generated Python. For example, a template containing `{{ 42 }} {{ 'ok' }} {{ [1, 2] }}` should return `[42, 'ok', [1, 2]]`, while a `Const` holding a binary payload like `b'blob'` should be skipped because the compiler would not embed it directly. Please reuse the compiler's existing safe-representation rule so the list matches what the compiler actually embeds.",
+   "T2": "Don't touch the docs build config, it's fragile right now.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nExport it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.\n\nThe task: On exceptions that go through `Environment.handle_exception`, I’d like the raised exception to carry a new `.location` attribute describing where it came from in the template. For `{{ 1/0 }}` I expect `.location == 'top-level template'`; for `{% block body %}{{ 1/0 }}{% endblock %}`, I expect `'block body'`. Use the existing rewritten traceback information rather than guessing from the exception message, and return `'outside template'` when no template frame is present.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.",
+   "T5": "Export policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nThe task: Change the default value of `extract_from_ast`'s `babel_style` parameter from `True` to `False`, so the default extraction for `{{ _(\"Hello\") }}` becomes `(1, \"_\", (\"Hello\",))` instead of `(1, \"_\", \"Hello\")`. Update the function's doc examples and tests to describe that new default. This is about the public default behavior, not a new extraction option.\n\nNo need to commit, I'll look at the working tree.\n\nTell me which files you changed when you're done.\n\nNo docstrings on the tests for this one.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one."
+  }
+ },
+ {
+  "id": "J8y",
+  "repo": "jinja",
+  "variant": 0,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "CD",
+   "TD2": "DC",
+   "EXP2": "CD",
+   "DOC": "DC",
+   "PD2": "CD"
+  },
+  "dev_kind": {
+   "TA2": "N",
+   "TD2": "H",
+   "EXP2": "N",
+   "DOC": "H",
+   "PD2": "N"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja037/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "Add a built-in `{% sourceid %}` statement tag in `parser.py` that renders a short template-source id: the literal prefix `src-` immediately followed by the first eight characters of the template-source fingerprint the bytecode cache already computes for the current template source. For example, if that fingerprint for source `Hello` starts with `abc12345`, a template containing just `{% sourceid %}` should render `src-abc12345`, and source `Bye` should produce a different id. It must work on a default `Environment` even when no bytecode cache is configured, and it must use the template’s own source rather than its name or filename.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja031/d",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "Babel extraction should attach every translator comment in the contiguous comment run immediately before a gettext-style call, not just the nearest one. For example, with line comments enabled and comment tags `['Translators:']`, two consecutive `// Translators: Alice` and `// Translators: Bob` lines directly above `{{ gettext('Hello') }}` should yield comments `['Alice', 'Bob']`, and two consecutive `{# Translators: Alice #}` and `{# Translators: Bob #}` block comments should behave the same way.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja028/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Add a pure-AST helper in idtracking that takes a parsed template and returns the set of variable names the template writes to. For `{% set x = 1 %}{{ x }}` it should return `{'x'}`; for `{% for item in items %}{{ item }}{% endfor %}` it should include `item` because the loop assigns it; and for `{% for k, v in pairs %}{{ k + v }}{% endfor %}` it should include both `k` and `v`. Walk the parsed nodes directly rather than relying on render-time symbol analysis.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T4": {
+    "task": "ja039/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Please add a public helper in meta.py called template_structure_key(ast) that returns a deterministic string key for cache reuse when two templates have the same tag/expression structure. For example, parsing `{{ name }}` and parsing a version with leading blank lines before `{{ name }}` should give the same key, while `{{ name }}` and `{{ name|upper }}` should differ. Base it on the AST's existing text serialization so the key is easy to inspect when debugging.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja025/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "In Parser.parse_primary, change the fallback syntax-error wording from `unexpected ...` to `Expected an expression, got ...`, keeping the existing token description and line number. Update any parser tests that pin the old wording.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja069/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Add an `extract_translations(source, comment_tags=())` method to `NativeEnvironment` that returns translation calls from a template as native dictionaries with line number, function name, message, and comments. For `NativeEnvironment().extract_translations('{{ _(\"Hello\") }}')`, I expect `[{'lineno': 1, 'function': '_', 'message': 'Hello', 'comments': []}]`; when a preceding translator comment matches one of the provided tags, that text should be included in `comments`. Please use the Babel extraction machinery already available in the extension module.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T7": {
+    "task": "ja013/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "Please add a small helper in utils.py, `template_scratch_variables(env, source)`, that compiles a template string and returns the sorted names of the compiler-generated scratch variables it finds in the generated Python source. Identify them by the compiler's existing scratch-name pattern rather than by filter/test names or try/except structure; for `{{ name|upper }}` it should return a one-element list, and for `{{ name|upper }} {{ name|lower }}` a two-element list.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTell me which files you changed when you're done.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nNow the task. Add a built-in `{% sourceid %}` statement tag in `parser.py` that renders a short template-source id: the literal prefix `src-` immediately followed by the first eight characters of the template-source fingerprint the bytecode cache already computes for the current template source. For example, if that fingerprint for source `Hello` starts with `abc12345`, a template containing just `{% sourceid %}` should render `src-abc12345`, and source `Bye` should produce a different id. It must work on a default `Environment` even when no bytecode cache is configured, and it must use the template’s own source rather than its name or filename.",
+   "T2": "Keep the diff small, please. No drive-by reformatting.\n\nDocstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nI like a one-line docstring on each of my tests, I read them in my IDE's test tree. Add them here.\n\nThe task: Babel extraction should attach every translator comment in the contiguous comment run immediately before a gettext-style call, not just the nearest one. For example, with line comments enabled and comment tags `['Translators:']`, two consecutive `// Translators: Alice` and `// Translators: Bob` lines directly above `{{ gettext('Hello') }}` should yield comments `['Alice', 'Bob']`, and two consecutive `{# Translators: Alice #}` and `{# Translators: Bob #}` block comments should behave the same way.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nI never touch `docs/api.rst` in my feature branches, I do the docs in a separate pass later. Leave it alone here.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.",
+   "T5": "Don't export it from the top-level `__init__` this time.\n\nTest docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nThe task: In Parser.parse_primary, change the fallback syntax-error wording from `unexpected ...` to `Expected an expression, got ...`, keeping the existing token description and line number. Update any parser tests that pin the old wording.\n\nNo docstrings on the private helpers this time.\n\nLeave the `-> None` off the tests this time.\n\nDon't touch the docs build config, it's fragile right now.\n\nTell me which files you changed when you're done."
+  }
+ },
+ {
+  "id": "J9y",
+  "repo": "jinja",
+  "variant": 1,
+  "norms": [
+   "TA2",
+   "TD2",
+   "EXP2",
+   "DOC",
+   "PD2"
+  ],
+  "order": {
+   "TA2": "DC",
+   "TD2": "CD",
+   "EXP2": "DC",
+   "DOC": "CD",
+   "PD2": "DC"
+  },
+  "dev_kind": {
+   "TA2": "S",
+   "TD2": "N",
+   "EXP2": "E",
+   "DOC": "N",
+   "PD2": "S"
+  },
+  "slots": {
+   "T1": {
+    "task": "ja019/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-02",
+    "text": "In `src/jinja2/parser.py`, make every entry in `FromImport.names` a three-tuple of `(original_name, local_name, line_number)`: for `from 'm' import a` use the imported name twice, and for `a as b` use the original and local names. Keep explicit `with context`/`without context` handling and rendering behavior unchanged. Fill the line number from the relevant imported or alias name token.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T2": {
+    "task": "ja053/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-03",
+    "text": "The `wordwrap` filter currently breaks very long unbroken tokens by default, which mangles URLs and hashes in generated docs. Change its default so long words are not broken (`break_long_words` defaults to False), and update the docstring and tests to match. Callers who want the old chopping behavior should have to ask for it explicitly.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T3": {
+    "task": "ja003/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-04",
+    "text": "Could you add an `Environment.extract_simple_translations(source)` helper that returns the messages from gettext calls which have exactly one literal string and no extra placeholders? For `{{ _('Hello') }}` and `{{ gettext('Save') }}` I expect `['Hello', 'Save']`, while `{{ _('Hi %(name)s', name='World') }}` and `{{ ngettext('one', 'many', n) }}` should be left out. Please reuse the existing extraction helper rather than walking the AST yourself.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T4": {
+    "task": "ja043/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-05",
+    "text": "Add a public meta introspection helper `find_constant_tests` that, for each constant literal in a parsed template, reports the first built-in test in the environment that accepts that value and returns true. For example, `env.parse('{{ 1 }}')` should report `{1: 'odd'}` and `env.parse('{{ 2 }}')` should report `{2: 'even'}`; skip built-in tests that raise when called with only the value.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T5": {
+    "task": "ja022/p",
+    "member": "A",
+    "name": "Alex",
+    "date": "2026-03-06",
+    "text": "Change `meta.find_referenced_templates` so that when a dynamic include or extends is a simple variable name, it yields that name instead of `None`. Concrete string references should stay unchanged, and non-name dynamic expressions should still yield `None`. Update the docstring and any test expectations for `{% include helper %}`.",
+    "nat": {
+     "versionadded": false,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": false
+    }
+   },
+   "T6": {
+    "task": "ja025/d",
+    "member": "B",
+    "name": "Blake",
+    "date": "2026-03-07",
+    "text": "Please add an `expr_error` filter for the template editor: it accepts a string and returns `None` when the string is a standalone Jinja expression, otherwise a short human-readable sentence. For `'1 + 2'` return `None`; for `'1 +'` return `'The expression is incomplete; a value was expected.'`",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   },
+   "T7": {
+    "task": "ja007/d",
+    "member": "C",
+    "name": "Casey",
+    "date": "2026-03-08",
+    "text": "I need a new `syntax_hint` filter for our template playground: it should try to compile the string it receives and return an empty string when the snippet is valid. When it is invalid, return one line made from the parser message plus the location text Jinja normally puts on the error's following line, so the inline hint matches real Jinja output. For example, `{{ \"{% if x %}\"|syntax_hint }}` should produce the parser's error text and the usual unnamed line-1 location, while `{{ \"Hello\"|syntax_hint }}` should produce an empty string; also accept an optional `name` argument so `{{ \"{% if x %}\"|syntax_hint(name=\"demo.html\") }}` uses the location Jinja reports for that name.",
+    "nat": {
+     "versionadded": true,
+     "keyword_only_params": false,
+     "lazy_import": false,
+     "private_helpers": true
+    }
+   }
+  },
+  "prior_msgs": {
+   "T1": "A few things about how we work in this repo, before you start.\n\nTeam rule: the package's top-level namespace is frozen. When anyone adds a new public function or class, it is not added to the top-level `__init__.py`; users import it from its submodule. Reviewers send back new top-level exports.\n\nDocumentation rule for the whole team: a new public function or class has to be added to `docs/api.rst` in the same change. PRs that add public API without touching `docs/api.rst` are sent back.\n\nTeam rule: new private helpers, meaning functions or methods whose name starts with an underscore, get no docstring, just a short `#` comment above the definition. The maintainers ask everyone for this because helper docstrings were leaking into the generated API docs.\n\nThe maintainers have asked everyone to keep new test functions free of return annotations, no `-> None`: the test suite isn't type-checked, and reviewers ask for the annotation to be removed whoever wrote the test.\n\nTeam rule for tests in this repo: new test functions have no docstring, and any explanation goes in a `#` comment above the function. The maintainers want the verbose test report uncluttered, and reviewers ask everyone to take test docstrings out.\n\nNo need to commit, I'll look at the working tree.\n\nNow the task. In `src/jinja2/parser.py`, make every entry in `FromImport.names` a three-tuple of `(original_name, local_name, line_number)`: for `from 'm' import a` use the imported name twice, and for `a as b` use the original and local names. Keep explicit `with context`/`without context` handling and rendering behavior unchanged. Fill the line number from the relevant imported or alias name token.",
+   "T2": "Test docstrings are now required: the maintainers adopted a report tool that prints each test's docstring, and agreed at this week's sync that every new test function gets a one-line docstring saying what behaviour it checks. It is in the testing guide, and new tests without one get sent back.\n\nExport it from the top-level `__init__` for this one: the scratch scripts on my machine all import from the package root.\n\nAnnotate the tests with `-> None` for this one: I'm also submitting it to a downstream fork that type-checks its tests.\n\nThe task: The `wordwrap` filter currently breaks very long unbroken tokens by default, which mangles URLs and hashes in generated docs. Change its default so long words are not broken (`break_long_words` defaults to False), and update the docstring and tests to match. Callers who want the old chopping behavior should have to ask for it explicitly.\n\nAPI docs handling changed: the docs maintainers now own `docs/api.rst` and regenerate it themselves, so contributors no longer edit it. The agreement from last week's sync is that each new public function or class is listed by name, one per line, in `docs/api_pending.txt`, and nothing else in docs is touched. It's written up in the contributing guide.\n\nOnly run the tests for the module you touch, the full suite is slow on my laptop.\n\nGive the private helpers docstrings for this one: I'm walking a new hire through this code tomorrow and want them in the hover text.\n\nKeep the public names short, I have to type them a lot.",
+   "T5": "Docstrings on private helpers are now required: the docs generator was fixed to skip private names, and since the helpers were hard to follow the maintainers agreed that every new underscore-prefixed function or method gets a docstring. The style guide was updated on Monday, and reviewers send back new helpers without one.\n\nTyping of tests changed: the maintainers switched on the type checker for the test suite last week and agreed that every new test function has to be annotated with `-> None`. The contributing guide is updated, and unannotated new tests get sent back.\n\nAdd it to `docs/api.rst` directly this time, not to the pending file.\n\nThe task: Change `meta.find_referenced_templates` so that when a dynamic include or extends is a simple variable name, it yields that name instead of `None`. Concrete string references should stay unchanged, and non-name dynamic expressions should still yield `None`. Update the docstring and any test expectations for `{% include helper %}`.\n\nExport policy changed: users kept failing to find new API, so the maintainers agreed that every new public function or class is also exported from the package's top-level `__init__.py`. The API policy page says so now, and reviewers check for the export.\n\nI'm on Python 3.9 here, so skip anything that needs a newer interpreter.\n\nKeep the diff small, please. No drive-by reformatting.\n\nNo docstrings on the tests for this one."
+  }
+ }
+]
