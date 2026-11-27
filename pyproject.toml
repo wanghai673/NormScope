@@ -1,0 +1,16 @@
+[project]
+name = "normscope"
+version = "0.1.0"
+description = "Benchmark: do memory systems deliver the team convention that is actually in force?"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+normscope = "normscope.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["normscope"]

@@ -2,7 +2,7 @@
 冻结后所有对照组看到的内容相同。用法：python3 prior2.py <round> [并发=16]"""
 import json, os, shutil, sys
 from concurrent.futures import ThreadPoolExecutor
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, HERE)
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, f"{ROOT}/normscope")
 from common import CODEX_CONFIG, clean_dir, api_key, codex_call
 RN = sys.argv[1]; W = int(sys.argv[2]) if len(sys.argv) > 2 else 16; RD = f"{ROOT}/work/{RN}"; KEY = api_key(2); MODEL = "deepseek-v4.1-flash"
 groups = json.load(open(f"{RD}/groups.json")); os.makedirs(f"{RD}/prior", exist_ok=True)

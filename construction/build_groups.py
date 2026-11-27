@@ -3,8 +3,8 @@
 任务取自原机制库的提案（只读）；会触发更多约束的任务优先排到测试位。
 用法：python3 -I build2.py     输出 rounds/c2/groups.json"""
 import json, os, random, sys
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, f"{ROOT}/norms")
-from norms2 import NORM, DISTRACTORS
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, f"{ROOT}/normscope")
+from norms import NORM, DISTRACTORS
 P = "/path/to/pilot"; RN = os.environ.get("ROUND", "c2"); SET = os.environ.get("NORMSET", "1"); RD = f"{ROOT}/work/{RN}"; os.makedirs(RD, exist_ok=True); rnd = random.Random({"1": 20261126, "2": 7}.get(SET, 11))
 SLOTS = ["T1", "T2", "T3", "T4", "T5", "T6", "T7"]; WHO = {"T1": "A", "T2": "A", "T3": "B", "T4": "C", "T5": "A", "T6": "B", "T7": "C"}
 NAMES = {"A": "Alex", "B": "Blake", "C": "Casey"}; NGROUPS = {"click": 7, "jinja": 9}

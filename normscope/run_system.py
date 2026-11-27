@@ -5,17 +5,17 @@
 用法：<python> chain2.py <round> <cond> [并发=16]      mem0 用 pilot/memenv 的 python，hindsight 用 pilot/hsenv 的 python"""
 import json, math, os, re, shutil, sys, threading, time, urllib.request
 from concurrent.futures import ThreadPoolExecutor
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, HERE); sys.path.insert(0, f"{ROOT}/norms")
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, HERE); 
 from common import CODEX_CONFIG, clean_dir, api_key, sh, codex_call
 import llm
-from norms2 import NORM, judge_all
+from norms import NORM, judge_all
 RN, COND = sys.argv[1], sys.argv[2]; W = int(sys.argv[3]) if len(sys.argv) > 3 else 16
 RD = f"{ROOT}/work/{RN}"; KEY = api_key(2); MODEL = "deepseek-v4.1-flash"; PKG = {"click": "src/click", "jinja": "src/jinja2"}
-GROUPS = [g for g in json.load(open(f"{RD}/groups.json")) if not os.environ.get("ONLY_GROUPS") or g["id"] in os.environ["ONLY_GROUPS"].split(",")]; STEPS = ["w:T1", "w:T2", "t:T3", "w:T3", "t:T4", "w:T4", "w:T5", "t:T6", "w:T6", "t:T7"]; TESTS = ["T3", "T4", "T6", "T7"]
+GROUPS = [g for g in json.load(open(f"{ROOT}/data/{RN}/groups.json")) if not os.environ.get("ONLY_GROUPS") or g["id"] in os.environ["ONLY_GROUPS"].split(",")]; STEPS = ["w:T1", "w:T2", "t:T3", "w:T3", "t:T4", "w:T4", "w:T5", "t:T6", "w:T6", "t:T7"]; TESTS = ["T3", "T4", "T6", "T7"]
 RETRY = bool(os.environ.get("RETRY_TIMEOUTS")); REPLAY = bool(os.environ.get("REPLAY")); NS = RN + ("r" if REPLAY else "")
 GW = os.environ.get("GW_OVERRIDE") or "https://your-gateway.example/v1"; LOCK = threading.Lock(); TOPK = 12
 def rule_at(order, slot): return "new" if order == "CD" else ("old" if slot in ("T3", "T4") else "new")
-def prior(g): return json.load(open(f"{RD}/prior/{g['id']}.json"))
+def prior(g): return json.load(open(f"{ROOT}/data/{RN}/prior/{g['id']}.json"))
 def hdr(g, slot, agent=False):
     s = g["slots"][slot]; who = f"{s['name']} ({'maintainer' if s['member'] == 'A' else 'team member'})"
     return f"[{s['date']}] {s['name']}'s coding agent reported: " if agent else f"[{s['date']}] {who} told their coding agent: "

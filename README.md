@@ -69,41 +69,54 @@
 
 ## 快速开始
 
-只需要 Python 3.9+，不需要安装依赖。
+只需要 Python 3.9+，没有第三方依赖。
 
 ```bash
 git clone https://github.com/wanghai673/NormScope.git
 cd NormScope
 ```
 
-**复现排行榜。** 用仓库里发布的运行记录重新判分：
+**看一组题目长什么样**：本组的规范、维护者先后说的话、成员的任务。
 
 ```bash
-python3 scripts/score2.py c2      # 8 条规范，16 组
-python3 scripts/score2.py c4      # 5 条规范，16 组
+python3 -m normscope show --group C1
 ```
 
-排行榜是 c2 和 c4 合并后的数字；每批各自的完整表格在 `results/<批次>/summary.md`。
-
-**运行检查脚本的自测。**
+**复现排行榜**：用仓库里发布的运行记录重新判分。
 
 ```bash
-python3 norms/norms2.py           # 最后一行应为 bad 0
+python3 -m normscope leaderboard
 ```
 
-**判定一次代码改动。** 给出改动前后的两个目录，检查脚本返回每条规范是否被触发、是否符合原规范、是否符合新规范：
+```text
+| 系统 | 遵守率 | 95% 区间 | 整条链全对 | 跟上 | 守住 | ...
+| 理想送达（上限） | 99% | 98%–100% | 96% | 100% | 98% | ...
+| EverOS | 54% | 50%–58% | 13% | 85% | 22% | ...
+```
 
-```python
-import sys; sys.path.insert(0, "norms")
-from norms2 import judge_all
+加 `--details` 可以看按个人破例的情形、按规范拆开的明细；加 `--split split_a` 只看其中一批。
 
-judge_all("click", "path/to/base", "path/to/after", "src/click", ["CHG", "VN", "DS"])
-# {'CHG': {'trig': True, 'old': False, 'new': True}, ...}
+**判定一次代码改动**：给出改动前后的两个仓库目录，看它符合哪一版规范。
+
+```bash
+python3 -m normscope check --repo click --base path/to/click_before --after path/to/click_after
+```
+
+```text
+CHG        符合新规范
+TS_click   符合原规范
+DS         未触发
+```
+
+**检查脚本自测**：最后一行应为 `bad 0`。
+
+```bash
+python3 -m normscope selftest
 ```
 
 ## 评测你自己的记忆系统
 
-记忆系统只需要提供两个操作：写入一段会话，按一段文本检索。接入方式是在 `scripts/chain2.py` 里各加一个分支：
+记忆系统只需要提供两个操作：写入一段会话，按一段文本检索。在 `normscope/run_system.py` 里各加一个分支：
 
 ```python
 def mem_write(g, slot, st, user, assistant):
@@ -117,27 +130,29 @@ def mem_query(g, slot, st, q):
         return "\n".join(my_client.search(space=g["id"], query=q, top_k=12))
 ```
 
-每组用独立的记忆空间（`g["id"]`）。`mem_query` 返回的文本会原样放进 agent 的任务消息，上限 7000 字符。
-
-然后运行并判分：
+每组用独立的记忆空间（`g["id"]`）。`mem_query` 返回的文本会原样放进 agent 的任务消息，上限 7000 字符。再把名字加进 `normscope/scoring.py` 的 `SYSTEMS`，然后运行并判分：
 
 ```bash
-mkdir -p work && cp -r data/c2 work/c2      # 题目和冻结的维护者会话
-python3 scripts/chain2.py c2 mysystem 16    # 每组依次：写入 T1 T2 → 测 T3 T4 → 写入 T5 → 测 T6 T7
-python3 scripts/score2.py c2                # 读 work/c2 下的结果
+python3 -m normscope run --split split_a --system mysystem     # 结果写到 work/split_a/
+python3 -m normscope leaderboard --split split_a --work
 ```
 
-并在 `scripts/score2.py` 的 `CONDS` 和 `NAME` 里加上 `mysystem`。
-
-**运行需要自备的环境**（脚本里是占位符，见 `scripts/common.py`）：
+**运行需要自备的环境**（`normscope/common.py` 里是占位符）：
 
 - 一个 OpenAI 兼容的模型网关，和装有 Codex 的容器镜像；
-- click、jinja 在 `data/` 所用起点提交上的干净副本，镜像里要装好它们的依赖；
-- 约 1 小时：128 个测试任务，每个任务 agent 消耗约 90 万 token（九成以上命中缓存）。
+- click、jinja 在起点提交上的干净副本，镜像里要装好它们的依赖；
+- 约 1 小时：两批共 128 个测试任务，每个任务 agent 消耗约 90 万 token（九成以上命中缓存）。
 
 这套运行环境目前只在作者的机器上跑通过。
 
-## 数据格式
+## 数据
+
+两批数据考的规范不同，排行榜是两批合并的结果。
+
+| 批次 | 组数 | 规范 |
+|---|---|---|
+| `split_a` | 16 | 变更记录、测试写法、测试放哪、版本标记、文档字符串、新参数、新导入 |
+| `split_b` | 16 | 测试的返回标注、测试的文档字符串、顶层导出、API 文档、私有辅助函数 |
 
 `data/<批次>/groups.json`，每组一条：
 
@@ -151,7 +166,7 @@ python3 scripts/score2.py c2                # 读 work/c2 下的结果
 
 `data/<批次>/prior/<组号>.json` 是冻结的维护者会话（用户消息和 agent 的回复）。
 
-`results/<批次>/runs.jsonl`，每个测试任务一行：对照组、组号、任务位、注入的记忆全文、agent 改动的文件、每条规范的判定。
+`results/<批次>/runs.jsonl`，每个测试任务一行：系统、组号、任务位、注入的记忆全文、agent 改动的文件、每条规范的判定。
 
 ## 局限
 
@@ -167,8 +182,8 @@ python3 scripts/score2.py c2                # 读 work/c2 下的结果
 
 | 路径 | 内容 |
 |---|---|
-| `norms/` | 规范、维护者的话、检查脚本和自测 |
-| `data/` | 题目和冻结的维护者会话 |
-| `results/` | 汇总表、逐个判分点、每个任务的运行记录、token 用量 |
-| `scripts/` | 排组、生成会话、跑对照组、判分、回读检查、token 计量 |
+| `normscope/` | 命令行入口、规范与检查脚本、判分、运行记忆系统的脚本 |
+| `data/` | 两批题目和冻结的维护者会话 |
+| `results/` | 每个任务的运行记录、汇总表、记忆系统的 token 用量 |
+| `construction/` | 构造数据用的脚本：排组、生成维护者会话、回读检查 |
 | `assets/` | 图和画图脚本 |

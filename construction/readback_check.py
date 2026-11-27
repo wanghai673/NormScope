@@ -1,9 +1,9 @@
 """回读检查（第 2 批）：三个不同厂商的模型各自只看一句话，判断它对团队其他成员意味着什么；三家都和设计一致才通过。"""
 import json, os, re, sys
 from concurrent.futures import ThreadPoolExecutor
-HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, f"{ROOT}/norms"); sys.path.insert(0, "/path/to/pilot/scripts")
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); sys.path.insert(0, f"{ROOT}/normscope"); sys.path.insert(0, "/path/to/pilot/scripts")
 from llm import chat
-from norms2 import NORMS
+from norms import NORMS
 MODELS = ["claude-sonnet-5-5", "gpt-5.4", "qwen3.8-max"]; jobs = []
 ONLY = set(sys.argv[2].split(",")) if len(sys.argv) > 2 else None; RN = sys.argv[1] if len(sys.argv) > 1 else "c2"
 for n in NORMS:
